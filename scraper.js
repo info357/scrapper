@@ -64,13 +64,13 @@ async function runScraper(pincodes, keywords = DEFAULT_KEYWORDS, onProgress) {
 
   const browser = await puppeteer.launch({
     headless: true,
-    protocolTimeout: 120000,
+    protocolTimeout: 0,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
-      "--single-process"
+      "--no-zygote"
     ]
   });
 
