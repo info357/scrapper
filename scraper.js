@@ -64,11 +64,23 @@ async function runScraper(pincodes, keywords = DEFAULT_KEYWORDS, onProgress) {
 
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    protocolTimeout: 120000,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--single-process"
+    ]
   });
 
   const page = await browser.newPage();
+  page.setDefaultTimeout(30000);
+  page.setDefaultNavigationTimeout(60000);
+
   const websitePage = await browser.newPage();
+  websitePage.setDefaultTimeout(30000);
+  websitePage.setDefaultNavigationTimeout(60000);
 
   const results = [];
   const seen = new Set();
@@ -80,8 +92,8 @@ async function runScraper(pincodes, keywords = DEFAULT_KEYWORDS, onProgress) {
 
         console.log(`Searching: ${keyword} in ${pincode}`);
 
-        await page.goto(searchURL, { waitUntil: "domcontentloaded" });
-        await delay(4000);
+        await page.goto(searchURL, { waitUntil: "domcontentloaded", timeout: 60000 });
+        await delay(5000);
 
         const scrollContainer = await page.$('div[role="feed"]');
 
@@ -112,8 +124,8 @@ async function runScraper(pincodes, keywords = DEFAULT_KEYWORDS, onProgress) {
             if (!cards[i]) continue;
 
             await cards[i].click();
-            await page.waitForSelector("h1.DUwDvf", { timeout: 10000 });
-            await delay(2000);
+            await page.waitForSelector("h1.DUwDvf", { timeout: 30000 });
+            await delay(3000);
 
             const data = await page.evaluate(() => {
               const text = sel => document.querySelector(sel)?.innerText || null;
