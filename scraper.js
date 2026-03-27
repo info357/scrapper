@@ -62,9 +62,12 @@ async function runScraper(pincodes, keywords = DEFAULT_KEYWORDS, onProgress) {
     await ensureSheet(sheets, pincode);
   }
 
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+
   const browser = await puppeteer.launch({
     headless: true,
     protocolTimeout: 0,
+    executablePath,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
